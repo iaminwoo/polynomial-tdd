@@ -1,33 +1,24 @@
 public class Calc {
     public static int run(String input) {
+        return simplePlusMinus(input);
+    }
+
+    public static int simplePlusMinus(String input) {
         input = input.replace(" ","");
-        if(input.contains("+")){
-            return operation(input, "\\+");
-        } else if (input.contains("-")) {
-            return operation(input, "-");
-        }
-        return Integer.parseInt(input);
-    }
 
-    public static int operation(String input, String operator) {
-        String[] inputParts = input.split(operator, 2);
+        String[] numbers = input.split("[+-]");
+        String[] ops = input.split("\\d+");
+        int[] numToOps = new int[numbers.length];
 
-        for(int i = 0 ; i < 2 ; i++){
-            if(inputParts[i].contains("+") || inputParts[i].contains("-")){
-                System.out.println("before : " + inputParts[i]);
-                inputParts[i] = String.valueOf(run(inputParts[i]));
-            }
-            System.out.println("after : " + inputParts[i]);
+        for(int i = 0 ; i < numbers.length ; i++){
+            numToOps[i] = Integer.parseInt(ops[i] + numbers[i]);
         }
 
-        int firstNum = Integer.parseInt(inputParts[0]);
-        int secondNum = Integer.parseInt(inputParts[1]);
+        int result = 0;
+        for(int num : numToOps){
+            result += num;
+        }
 
-        if(operator.equals("\\+")) return firstNum+secondNum;
-        if(operator.equals("-")) return firstNum-secondNum;
-
-        return 0;
+        return result;
     }
-
-
 }
