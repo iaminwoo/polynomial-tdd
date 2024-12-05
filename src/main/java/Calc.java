@@ -1,19 +1,21 @@
 public class Calc {
     public static int run(String input) {
         System.out.println("Cal start!");
-
-        input = input.replace("- ", "+ -");
         System.out.println("mission : " + input);
 
+        //빼기 계산을 음수 더하기로 처리
+        input = input.replace("- ", "+ -");
+
+        // while문으로 한번씩 계산
+        // if문들로 계산 우선순위 설정
         while (true) {
-            // if문들로 계산 우선순위 설정
-            if (input.contains("*")) {
+            if(input.contains("(")){
+                input = bracketOps(input);
+            }else if (input.contains("*")) {
                 input = operation(input, "*");
             } else if (input.contains("+")) {
                 input = operation(input, "+");
-            } else if (input.contains("-") && !input.matches("-?\\d+")) {
-                input = operation(input, "-");
-            } else {
+            }else {
                 break;
             }
         }
@@ -23,10 +25,15 @@ public class Calc {
         return result;
     }
 
+    private static String bracketOps(String input) {
+        input = input.substring(1, input.length()-1);
+        return input;
+    }
+
     private static String operation(String input, String ops) {
         String[] parts = input.split(" ");
         StringBuilder stringBuilder = new StringBuilder();
-        boolean oped = false;
+        boolean oped = false;   // 한번에 하나만 계산되도록
 
         for (int i = 0; i < parts.length; i++) {
             if (parts[i].equals(ops) && !oped) {
