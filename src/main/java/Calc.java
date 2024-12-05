@@ -26,7 +26,38 @@ public class Calc {
     }
 
     private static String bracketOps(String input) {
-        input = input.substring(1, input.length()-1);
+        StringBuilder stringBuilder = new StringBuilder();
+        int bracketEnd = 0;
+        int bracketNum = 1;
+        boolean inBracket = false;
+
+        for (int i = 0; i < input.length(); i++) {
+            if(input.charAt(i) == '(' && !inBracket){
+                inBracket = true;
+                continue;
+            } else if (input.charAt(i) == '(') {
+                bracketNum++;
+            }
+
+            if(inBracket){
+                stringBuilder.append(input.charAt(i));
+            }
+
+            if(input.charAt(i) == ')'){
+                if(bracketNum == 1){
+                    inBracket = false;
+                    stringBuilder.deleteCharAt(stringBuilder.length()-1);
+                    bracketEnd = i;
+                }
+                bracketNum--;
+            }
+
+        }
+
+        String bracketResult = String.valueOf(run(stringBuilder.toString()));
+        System.out.println(bracketResult);
+        input = bracketResult + input.substring(bracketEnd+1);
+
         return input;
     }
 
