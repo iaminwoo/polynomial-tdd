@@ -1,46 +1,57 @@
 public class Calc {
     public static int run(String input) {
-        int result;
+        System.out.println("Cal start!");
 
-        if(input.contains("*")){
-            result = multiply(input);
-        }else{
-            result = simplePlusMinus(input);
+        input = input.replace("- ", "+ -");
+        System.out.println("mission : " + input);
+
+        while (true) {
+            // if문들로 계산 우선순위 설정
+            if (input.contains("*")) {
+                input = operation(input, "*");
+            } else if (input.contains("+")) {
+                input = operation(input, "+");
+            } else if (input.contains("-") && !input.matches("-?\\d+")) {
+                input = operation(input, "-");
+            } else {
+                break;
+            }
         }
 
+        int result = Integer.parseInt(input);
+        System.out.println("result : " + result);
         return result;
     }
 
-    private static int multiply(String input) {
-        input = input.replace(" ","");
+    private static String operation(String input, String ops) {
+        String[] parts = input.split(" ");
+        StringBuilder stringBuilder = new StringBuilder();
+        boolean oped = false;
 
-        String[] parts = input.split("\\*");
+        for (int i = 0; i < parts.length; i++) {
+            if (parts[i].equals(ops) && !oped) {
+                int numA = Integer.parseInt(parts[i - 1]);
+                int numB = Integer.parseInt(parts[i + 1]);
 
-        int first = Integer.parseInt(parts[0]);
-        int sec = Integer.parseInt(parts[1]);
-
-
-        return (first * sec);
-    }
-
-    // 각 부호별로 분리해서 더함
-    // 예를들어 "10 - 10 - 10" -> [10, -10, -10]으로
-    public static int simplePlusMinus(String input) {
-        input = input.replace(" ","");
-
-        String[] numbers = input.split("[+-]");
-        String[] ops = input.split("\\d+");
-        int[] numToOps = new int[numbers.length];
-
-        for(int i = 0 ; i < numbers.length ; i++){
-            numToOps[i] = Integer.parseInt(ops[i] + numbers[i]);
+                stringBuilder.delete(stringBuilder.length() - parts[i - 1].length() - 1, stringBuilder.length());
+                switch (parts[i]) {
+                    case "+":
+                        stringBuilder.append(numA + numB);
+                        break;
+                    case "*":
+                        stringBuilder.append(numA * numB);
+                        break;
+                    case "-":
+                        stringBuilder.append(numA - numB);
+                        break;
+                }
+                stringBuilder.append(" ");
+                i++;
+                oped = true;
+            } else {
+                stringBuilder.append(parts[i] + " ");
+            }
         }
-
-        int result = 0;
-        for(int num : numToOps){
-            result += num;
-        }
-
-        return result;
+        return stringBuilder.toString().strip();
     }
 }
