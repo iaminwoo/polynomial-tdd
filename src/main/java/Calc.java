@@ -10,7 +10,7 @@ public class Calc {
         // if문들로 계산 우선순위 설정
         while (true) {
             if(input.contains("(")){
-                input = bracketOps(input);
+                input = bracketCal(input);
             }else if (input.contains("*")) {
                 input = operation(input, "*");
             } else if (input.contains("+")) {
@@ -25,76 +25,37 @@ public class Calc {
         return result;
     }
 
-    private static String bracketOps(String input) {
-        StringBuilder stringBuilder = new StringBuilder();
-        int bracketStart = 0;
-        int bracketEnd = 0;
-        int bracketNum = 1;
-        boolean inBracket = false;
+    // 괄호 처리 (괄호 안에서부터 처리)
+    private static String bracketCal(String input) {
+        int start = input.lastIndexOf('(');
+        int end = input.indexOf(')', start);
 
-        for (int i = 0; i < input.length(); i++) {
-            if(input.charAt(i) == '(' && !inBracket){
-                inBracket = true;
-                bracketStart = i;
-                continue;
-            } else if (input.charAt(i) == '(') {
-                bracketNum++;
-            }
+        String inside = input.substring(start + 1, end);
+        String evaluated = String.valueOf(run(inside));
 
-            if(inBracket){
-                stringBuilder.append(input.charAt(i));
-            }
-
-            if(input.charAt(i) == ')'){
-                if(bracketNum == 1){
-                    inBracket = false;
-                    stringBuilder.deleteCharAt(stringBuilder.length()-1);
-                    bracketEnd = i;
-                    break;
-                }else{
-                    bracketNum--;
-                }
-            }
-
-        }
-
-        String bracketResult = String.valueOf(run(stringBuilder.toString()));
-        System.out.println(bracketResult);
-        input = input.substring(0, bracketStart)
-                +bracketResult + input.substring(bracketEnd+1);
-
-        return input;
+        return input.substring(0, start) + evaluated + input.substring(end + 1);
     }
 
+    // 기본 계산
     private static String operation(String input, String ops) {
         String[] parts = input.split(" ");
-        StringBuilder stringBuilder = new StringBuilder();
-        boolean oped = false;   // 한번에 하나만 계산되도록
+        StringBuilder result = new StringBuilder();
+        boolean operationDone = false;   // 한번에 하나만 계산되도록
 
         for (int i = 0; i < parts.length; i++) {
-            if (parts[i].equals(ops) && !oped) {
-                int numA = Integer.parseInt(parts[i - 1]);
-                int numB = Integer.parseInt(parts[i + 1]);
+            if (parts[i].equals(ops) && !operationDone) {
+                int left = Integer.parseInt(parts[i - 1]);
+                int right = Integer.parseInt(parts[i + 1]);
 
-                stringBuilder.delete(stringBuilder.length() - parts[i - 1].length() - 1, stringBuilder.length());
-                switch (parts[i]) {
-                    case "+":
-                        stringBuilder.append(numA + numB);
-                        break;
-                    case "*":
-                        stringBuilder.append(numA * numB);
-                        break;
-                    case "-":
-                        stringBuilder.append(numA - numB);
-                        break;
-                }
-                stringBuilder.append(" ");
+                result.setLength(result.length() - parts[i - 1].length() - 1);
+                result.append(parts[i].equals("+") ? left + right : left * right);
+                result.append(" ");
                 i++;
-                oped = true;
+                operationDone = true;
             } else {
-                stringBuilder.append(parts[i] + " ");
+                result.append(parts[i]).append(" ");
             }
         }
-        return stringBuilder.toString().strip();
+        return result.toString().strip();
     }
 }
